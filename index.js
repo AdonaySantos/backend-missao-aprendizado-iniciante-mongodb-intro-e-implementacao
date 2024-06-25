@@ -25,8 +25,12 @@ async function main() {
   //              0       1         2
 
   // Endpoint Read All [GET] /personagem
-  app.get("/personagem", function (req, res) {
-    res.send(lista.filter(Boolean));
+  app.get("/personagem", async function (req, res) {
+    // Acessamos a lista de itens na collection do MongoDB
+    const itens = await collection.find().toArray()
+
+    // Enviamos a lista de intens como resultado
+    res.send(itens);
   });
 
   // Endpoint Read By ID [GET] /personagem/:id
