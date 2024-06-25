@@ -61,9 +61,7 @@ async function main() {
 
     // Checar se o 'nome' está presente no body da requisição
     if (!novoItem || !novoItem.nome) {
-      return res
-        .status(400)
-        .send('Requisição deve conter a propriedade "nome".');
+      return res.status(400).send('Requisição deve conter a propriedade "nome".');
     }
 
     // Checar se o novoItem já existe na lista ou não
@@ -79,39 +77,37 @@ async function main() {
   });
 
   // Endpoint Update [PUT] /personagem/:id
-  app.put("/personagem/:id", function (req, res) {
+  app.put("/personagem/:id", async function (req, res) {
     // Acessamos o ID dos parâmetros de rota
     const id = req.params.id;
 
     // Checamos se o item com o ID - 1 está na lista, exibindo
     // uma mensagem caso não esteja
-    if (!lista[id - 1]) {
-      return res.status(404).send("Item não encontrado");
-    }
+    // if (!lista[id - 1]) {
+    //   return res.status(404).send("Item não encontrado");
+    // }
 
     // Acessamos o Body da requisição
-    const body = req.body;
-
-    // Acessamos a propriedade 'nome' do body
-    const novoItem = body.nome;
+    const novoItem = req.body;
 
     // Checar se o 'nome' está presente no body da requisição
-    if (!novoItem) {
-      return res
-        .status(400)
-        .send('Requisição deve conter a propriedade "nome".');
+    if (!novoItem || !novoItem.nome) {
+      return res.status(400).send('Requisição deve conter a propriedade "nome".');
     }
 
     // Checar se o novoItem já existe na lista ou não
-    if (lista.includes(novoItem)) {
-      return res.status(409).send("Item já existe na lista");
-    }
+    // if (lista.includes(novoItem)) {
+    //   return res.status(409).send("Item já existe na lista");
+    // }
 
-    // Atualizamos na lista o item pelo ID - 1
-    lista[id - 1] = novoItem;
+    // Atualizamos na collection o item pelo ID
+    await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: novoItem }
+    )
 
     // Exibimos uma mensagem de sucesso
-    res.status(200).send("Item atualizado com sucesso: " + id + " - " + novoItem);
+    res.status(200).send(novoItem);
   });
 
   // Endpoint Delete [DELETE] /personagem/:id
